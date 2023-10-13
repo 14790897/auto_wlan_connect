@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
 
         binding.appBarMain.button.setOnClickListener { view ->
-            val url = "https://www.example.com"
+            val url = "https://github.com/14790897/auto_wlan_connect/issues"
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(url)
             startActivity(intent)
