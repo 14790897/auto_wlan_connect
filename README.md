@@ -14,6 +14,6 @@
 </div>
 
 ## 原理
-向https://captiveportal-login.shnu.edu.cn/auth/index.html/u发送用户名密码
+向 https://captiveportal-login.shnu.edu.cn/auth/index.html/u 发送用户名密码
 
 
