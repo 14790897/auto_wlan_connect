@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">快联网</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">shnu_wlan_connect</string>
+    <string name="nav_header_subtitle">上海师范大学无线网络快速连接 </string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="feedback">feedback</string>
+
+    <string name="menu_home">author:liuweiqing</string>
+    <string name="menu_gallery">mail:liuweiqing147@gmail.com</string>
+    <string name="menu_slideshow">github:14790897</string>
+</resources>
