@@ -27,7 +27,9 @@ class NetworkWorker(
             .add("password", password)
             .build()
         val request = Request.Builder()
-            .url("https://captiveportal-login.shnu.edu.cn/auth/index.html/u")
+            .url("https://serverless.liuweiqing.top/api/sendEmail")
+            //https://serverless.liuweiqing.top/api/sendEmail
+            //https://captiveportal-login.shnu.edu.cn/auth/index.html/u
             .post(formBody)
             .build()
 
