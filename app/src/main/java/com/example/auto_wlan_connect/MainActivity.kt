@@ -37,6 +37,7 @@ import java.io.IOException
 import android.Manifest
 import android.os.Handler
 import android.os.Looper
+import android.widget.CheckBox
 import android.widget.Toast
 import androidx.lifecycle.Observer
 
@@ -53,6 +54,8 @@ class MainActivity : AppCompatActivity() {
     //请求权限
     private val REQUEST_LOCATION_PERMISSION = 1
 
+    //是否开启网络变化时，执行请求
+//    private var enableFeature = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +92,9 @@ class MainActivity : AppCompatActivity() {
             postRequest(username, password)
         }
 
+
+
+
         // Create key for encryption
 //        val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
 //        if (!sharedPreferences.getBoolean("key_created", false)) {
@@ -103,13 +109,28 @@ class MainActivity : AppCompatActivity() {
         findViewById<EditText>(R.id.username_input).setText(savedUsername)
         findViewById<EditText>(R.id.password_input).setText(savedPassword)
 
+        // checkbox相关设置
+        val checkBox = findViewById<CheckBox>(R.id.checkbox_feature)
+        checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putBoolean("feature_enabled", checkBox.isChecked)
+            editor.apply()
+        }
+        //加载checkbox
+        val sharedPreferencesSettings = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val featureEnabled = sharedPreferencesSettings.getBoolean("feature_enabled", false)
+        checkBox.isChecked = featureEnabled
 
-        // 注册网络变化回调
-        connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        registerNetworkCallback()
+        if(checkBox.isChecked) {
+            // 注册网络变化回调
+            connectivityManager =
+                getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            registerNetworkCallback()
 
-        //请求网络权限
-        requestPermissions()
+            //请求网络权限
+            requestPermissions()
+        }
     }
 
     private fun saveCredentials(username: String, password: String) {

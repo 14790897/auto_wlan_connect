@@ -26,13 +26,14 @@
         android:id="@+id/checkbox_feature"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="自动联网（测试）"
         android:checked="true"
+        android:text="自动联网（测试阶段）"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.466"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.341" />
+        app:layout_constraintVertical_bias="0.288" />
 
     <EditText
         android:id="@+id/username_input"
