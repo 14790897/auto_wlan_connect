@@ -49,9 +49,9 @@ class MainActivity : AppCompatActivity() {
     //网络变化时，执行请求
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var networkCallback: NetworkCallback
+
     //请求权限
     private val REQUEST_LOCATION_PERMISSION = 1
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -181,7 +181,8 @@ class MainActivity : AppCompatActivity() {
 
                 val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
                 networkCapabilities?.let {
-                    val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+                    val wifiManager =
+                        applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
                     val wifiInfo = wifiManager.connectionInfo
                     if (wifiInfo != null && wifiInfo.ssid != null) {
                         val ssid = wifiInfo.ssid.replace("\"", "")  // 删除SSID两边的双引号
@@ -196,6 +197,7 @@ class MainActivity : AppCompatActivity() {
 
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
+
     private fun scheduleWork() {
         val workRequest = OneTimeWorkRequestBuilder<NetworkWorker>()
             .setInputData(workDataOf("username" to "your-username", "password" to "your-password"))
@@ -206,20 +208,25 @@ class MainActivity : AppCompatActivity() {
 
         // Post the observe method call to the main thread
         Handler(Looper.getMainLooper()).post {
-        // Observe the work request's status
-        WorkManager.getInstance(applicationContext)
-            .getWorkInfoByIdLiveData(workRequest.id)
-            .observe(this, Observer { workInfo ->
-                workInfo?.let {
-                    if (it.state.isFinished) {
-                        // Get the output data
-                        val error = it.outputData.getString("error") ?: "No error message available"
-                        Toast.makeText(this, if (error != "No error message available") error else "Successfully logged in", Toast.LENGTH_LONG).show()
+            // Observe the work request's status
+            WorkManager.getInstance(applicationContext)
+                .getWorkInfoByIdLiveData(workRequest.id)
+                .observe(this, Observer { workInfo ->
+                    workInfo?.let {
+                        if (it.state.isFinished) {
+                            // Get the output data
+                            val error =
+                                it.outputData.getString("error") ?: "No error message available"
+                            Toast.makeText(
+                                this,
+                                if (error != "No error message available") error else "Successfully logged in",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } ?: run {
+                        Toast.makeText(this, "WorkInfo is null", Toast.LENGTH_LONG).show()
                     }
-                } ?: run {
-                    Toast.makeText(this, "WorkInfo is null", Toast.LENGTH_LONG).show()
-                }
-            })
+                })
         }
     }
 
@@ -231,18 +238,25 @@ class MainActivity : AppCompatActivity() {
 
     //权限请求
     private fun requestPermissions() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
 
             // Permission is not granted
-            ActivityCompat.requestPermissions(this,
+            ActivityCompat.requestPermissions(
+                this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_LOCATION_PERMISSION)
+                REQUEST_LOCATION_PERMISSION
+            )
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>, grantResults: IntArray
+    ) {
         when (requestCode) {
             REQUEST_LOCATION_PERMISSION -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
@@ -254,6 +268,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 return
             }
+
             else -> {
                 // Ignore all other requests.
             }
