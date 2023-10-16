@@ -27,7 +27,7 @@ class NetworkWorker(
             .add("password", password)
             .build()
         val request = Request.Builder()
-            .url("https://serverless.liuweiqing.top/api/sendEmail")
+            .url("https://captiveportal-login.shnu.edu.cn/auth/index.html/u")
             //https://serverless.liuweiqing.top/api/sendEmail
             //https://captiveportal-login.shnu.edu.cn/auth/index.html/u
             .post(formBody)
@@ -38,10 +38,21 @@ class NetworkWorker(
             if (response.isSuccessful) {
                 Result.success()
             } else {
-                Result.failure(workDataOf("error" to "Failed to login. Status code: ${response.code}"))
+                Result.failure(
+                    workDataOf(
+                        "error" to "Failed to login.",
+                        "status_code" to response.code,
+                        "response_message" to response.body?.string()
+                    )
+                )
             }
         } catch (e: Exception) {
-            Result.failure(workDataOf("error" to "Login request failed: ${e.message}"))
+            Result.failure(
+                workDataOf(
+                    "error" to "Login request failed: ${e.message}",
+                    "exception_type" to e.javaClass.simpleName
+                )
+            )
         }
     }
 }

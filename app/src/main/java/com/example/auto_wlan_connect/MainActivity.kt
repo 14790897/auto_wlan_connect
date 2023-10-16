@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             editor.putBoolean("feature_enabled", checkBox.isChecked)
             editor.apply()
         }
-        //加载checkbox
+        //加载checkbox的设置
         val sharedPreferencesSettings = getSharedPreferences("settings", Context.MODE_PRIVATE)
         val featureEnabled = sharedPreferencesSettings.getBoolean("feature_enabled", false)
         checkBox.isChecked = featureEnabled
@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity() {
                 getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             registerNetworkCallback()
 
-            //请求网络权限
+            //请求网络权限（如果选中的话）
             requestPermissions()
         }
     }
@@ -208,7 +208,7 @@ class MainActivity : AppCompatActivity() {
                     if (wifiInfo != null && wifiInfo.ssid != null) {
                         val ssid = wifiInfo.ssid.replace("\"", "")  // 删除SSID两边的双引号
                         // 现在你可以使用SSID变量
-                        if (ssid == "CMCC-2202-5G" || ssid == "CMCC-2202") {//
+                        if (ssid == "shnu" || ssid == "shnu-mobile") {//
                             scheduleWork()
                         }
                     }
@@ -220,8 +220,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun scheduleWork() {
+        // 加载保存的用户名和密码
+        val sharedPreferences = getSharedPreferences("credentials", Context.MODE_PRIVATE)
+        val savedUsername = sharedPreferences.getString("username", "")
+        val savedPassword = sharedPreferences.getString("password", "")
         val workRequest = OneTimeWorkRequestBuilder<NetworkWorker>()
-            .setInputData(workDataOf("username" to "your-username", "password" to "your-password"))
+            .setInputData(workDataOf("username" to savedUsername, "password" to savedPassword))
             .build()
 
         // Enqueue the work request
@@ -238,9 +242,12 @@ class MainActivity : AppCompatActivity() {
                             // Get the output data
                             val error =
                                 it.outputData.getString("error") ?: "No error message available"
+                            val statusCode = it.outputData.getString("status_code") ?: "No status code available"
+                            val responseMessage = it.outputData.getString("response_message") ?: "No response message available"
                             Toast.makeText(
                                 this,
-                                if (error != "No error message available") error else "Successfully logged in",
+                                if (error != "No error message available")     "Error: $error, Response Message: $responseMessage, Status Code: $statusCode"
+                                else "Successfully logged in",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
