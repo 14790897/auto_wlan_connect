@@ -32,6 +32,8 @@ jobs:
             prerelease: true
         - name: Upload APK
           uses: actions/upload-release-asset@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
             asset_path: app/build/outputs/apk/debug/app-debug.apk
