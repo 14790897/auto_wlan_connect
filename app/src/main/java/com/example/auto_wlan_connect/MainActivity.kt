@@ -37,6 +37,7 @@ import java.io.IOException
 import android.Manifest
 import android.os.Handler
 import android.os.Looper
+import android.view.MenuItem
 import android.widget.CheckBox
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -53,6 +54,9 @@ class MainActivity : AppCompatActivity() {
 
     //请求权限
     private val REQUEST_LOCATION_PERMISSION = 1
+
+    //settingactivity的消息
+    private var wlanWebsite: String? = null
 
     //是否开启网络变化时，执行请求
 //    private var enableFeature = true
@@ -170,8 +174,11 @@ class MainActivity : AppCompatActivity() {
             .add("user", username)
             .add("password", password)
             .build()
+
+        val url = wlanWebsite ?: "https://captiveportal-login.shnu.edu.cn/auth/index.html/u"
+
         val request = Request.Builder()
-            .url("https://captiveportal-login.shnu.edu.cn/auth/index.html/u")
+            .url(url)
             .post(formBody)
             .build()
 
@@ -303,4 +310,28 @@ class MainActivity : AppCompatActivity() {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+    //点击设置按钮后进入设置界面
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> {
+                // Start SettingsActivity when the settings menu item is selected
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    //接受settinsactivity的消息
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK && data != null) {
+            wlanWebsite = data.getStringExtra("wlan_website")
+        }
+    }
 }
+
+
+//待办事项 :需要将两个发送的方法整合到一起 10.16

@@ -29,6 +29,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- 声明SettingsActivity -->
+        <activity android:name=".SettingsActivity" />
     </application>
 
 </manifest>

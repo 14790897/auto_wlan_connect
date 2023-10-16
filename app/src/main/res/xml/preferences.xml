@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Add your preferences here -->
+<!--    <SwitchPreferenceCompat-->
+<!--        android:key="example_switch"-->
+<!--        android:title="Example Switch"-->
+<!--        android:defaultValue="false" />-->
+
+    <EditTextPreference
+        android:key="wlan_website"
+        android:title="输入目标网址"
+        android:summary="Enter some text"
+        android:dialogTitle="Input"
+        android:defaultValue="https://captiveportal-login.shnu.edu.cn/auth/index.html/u" />
+
+</PreferenceScreen>
