@@ -41,6 +41,7 @@ import android.view.MenuItem
 import android.widget.CheckBox
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import java.net.Proxy
 
 
 class MainActivity : AppCompatActivity() {
@@ -169,7 +170,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun postRequest(username: String, password: String) {
-        val client = OkHttpClient()
+        val client = OkHttpClient.Builder()
+            .proxy(Proxy.NO_PROXY)  // 在这里设置代理
+            .build()
         val formBody = FormBody.Builder()
             .add("user", username)
             .add("password", password)
