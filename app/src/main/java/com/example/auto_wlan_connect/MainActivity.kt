@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
             .add("password", password)
             .build()
 
-        val url = wlanWebsite ?: "https://captiveportal-login.shnu.edu.cn/auth/index.html/u"
+        val url = wlanWebsite ?: "http://captiveportal-login.shnu.edu.cn/auth/index.html/u"
 
         val request = Request.Builder()
             .url(url)
