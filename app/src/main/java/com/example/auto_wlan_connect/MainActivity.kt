@@ -185,14 +185,14 @@ class MainActivity : AppCompatActivity() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: okhttp3.Call, e: IOException) {
                 e.printStackTrace()
-                showAlert("Login request failed: ${e.message}")
+                showAlert("failed: ${e.message}")
             }
 
             override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
                 if (response.isSuccessful) {
                     showAlert("Successfully logged in")
                 } else {
-                    showAlert("Failed to login. Status code: ${response.code}, Content: ${response.body?.string()}")
+                    showAlert("Failed. Status code: ${response.code}, Content: ${response.body?.string()}")
                 }
             }
         })

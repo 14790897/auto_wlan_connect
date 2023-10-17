@@ -1,0 +1,5 @@
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">captiveportal-login.shnu.edu.cn</domain>
+    </domain-config>
+</network-security-config>
