@@ -6,12 +6,14 @@
 2. 关闭流量（因为校内网站禁止校外流量访问，而由于WiFi未连接，所以数据会通过流量走，导致访问被拒绝）
 3. 填入用户名密码
 4. 点击login
-4. 身份验证成功，愉快上网
+5. 身份验证成功，愉快上网
+   
+   [演示视频](./docs/display.mp4) 
 
 ## 界面概览
 <div style="display: inline-block;">
-    <img src="./prop1.jpg" alt="Image 1" width="200" style="margin-right: 20px;">
-    <img src="./prop2.jpg" alt="Image 2" width="200">
+    <img src="./docs/prop1.jpg" alt="Image 1" width="200" style="margin-right: 20px;">
+    <img src="./docs/prop2.jpg" alt="Image 2" width="200">
 </div>
 
 ## 原理
