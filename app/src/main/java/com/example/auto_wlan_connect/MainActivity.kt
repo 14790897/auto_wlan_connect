@@ -94,7 +94,8 @@ class MainActivity : AppCompatActivity() {
             val username: String = findViewById<EditText>(R.id.username_input).text.toString()
             val password: String = findViewById<EditText>(R.id.password_input).text.toString()
             saveCredentials(username, password)
-            postRequest(username, password)
+//            postRequest(username, password)
+            scheduleWork(wlanWebsite?: String)
         }
 
 
@@ -219,7 +220,7 @@ class MainActivity : AppCompatActivity() {
                         val ssid = wifiInfo.ssid.replace("\"", "")  // 删除SSID两边的双引号
                         // 现在你可以使用SSID变量
                         if (ssid == "shnu" || ssid == "shnu-mobile") {//
-                            scheduleWork()
+                            scheduleWork(wlanWebsite?: String)
                         }
                     }
                 }
@@ -229,13 +230,13 @@ class MainActivity : AppCompatActivity() {
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
-    private fun scheduleWork() {
+    private fun scheduleWork(wlanWebsite: Any) {
         // 加载保存的用户名和密码
         val sharedPreferences = getSharedPreferences("credentials", Context.MODE_PRIVATE)
         val savedUsername = sharedPreferences.getString("username", "")
         val savedPassword = sharedPreferences.getString("password", "")
         val workRequest = OneTimeWorkRequestBuilder<NetworkWorker>()
-            .setInputData(workDataOf("username" to savedUsername, "password" to savedPassword))
+            .setInputData(workDataOf("username" to savedUsername, "password" to savedPassword, "wlanWebsite" to wlanWebsite))
             .build()
 
         // Enqueue the work request
