@@ -41,6 +41,9 @@ import android.view.MenuItem
 import android.widget.CheckBox
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import java.net.Proxy
 
 
@@ -59,12 +62,18 @@ class MainActivity : AppCompatActivity() {
     //settingactivity的消息
     private var wlanWebsite: String? = null
 
-    //是否开启网络变化时，执行请求
-//    private var enableFeature = true
+    //默认网络，用于settings未获取到的情况
+    private var defaultWebsite = "http://captiveportal-login.shnu.edu.cn/auth/index.html/u"
+    // firebase analytics
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        //firebase analytics
+        // Obtain the FirebaseAnalytics instance.
+        firebaseAnalytics = Firebase.analytics
+        //请求网络变化权限,但发现不需要明确请求
+        requestPermissions2()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -81,6 +90,12 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val bundle = Bundle()
+            bundle.putString("destination", destination.label.toString())
+            firebaseAnalytics.logEvent("navigation_destination_changed", bundle)
+        }
+
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
@@ -91,15 +106,18 @@ class MainActivity : AppCompatActivity() {
 
         val loginButton: Button = findViewById(R.id.login_button)
         loginButton.setOnClickListener {
+            // 用于 Firebase Analytics 的事件追踪
+            val bundle = Bundle()
+            bundle.putString("button_name", "login_button")
+            bundle.putString("interaction_type", "click")
+            firebaseAnalytics.logEvent("login_button_clicked", bundle)
+
             val username: String = findViewById<EditText>(R.id.username_input).text.toString()
             val password: String = findViewById<EditText>(R.id.password_input).text.toString()
             saveCredentials(username, password)
 //            postRequest(username, password)
-            scheduleWork(wlanWebsite?: String)
+            scheduleWork(wlanWebsite?: defaultWebsite)
         }
-
-
-
 
         // Create key for encryption
 //        val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
@@ -137,6 +155,14 @@ class MainActivity : AppCompatActivity() {
             //请求网络权限（如果选中的话）
             requestPermissions()
         }
+
+        // 从 SharedPreferences 中读取 settings中保存的wlan_website
+        val sharedPreferencesInSettings = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        wlanWebsite = sharedPreferencesInSettings.getString("wlan_website", defaultWebsite) // 用一个默认值
+
+
+        //记录应用被打开
+        firebaseAnalytics.logEvent("app_opened", null)
     }
 
     private fun saveCredentials(username: String, password: String) {
@@ -220,10 +246,15 @@ class MainActivity : AppCompatActivity() {
                         val ssid = wifiInfo.ssid.replace("\"", "")  // 删除SSID两边的双引号
                         // 现在你可以使用SSID变量
                         if (ssid == "shnu" || ssid == "shnu-mobile") {//
-                            scheduleWork(wlanWebsite?: String)
+                            scheduleWork(wlanWebsite?: defaultWebsite)
                         }
                     }
                 }
+                // 用于 Firebase Analytics 的事件追踪
+                val bundle = Bundle()
+                bundle.putString("network_status", "available")
+                firebaseAnalytics.logEvent("network_status_changed", bundle)
+
             }
         }
 
@@ -255,12 +286,35 @@ class MainActivity : AppCompatActivity() {
                                 it.outputData.getString("error") ?: "No error message available"
                             val statusCode = it.outputData.getString("status_code") ?: "No status code available"
                             val responseMessage = it.outputData.getString("response_message") ?: "No response message available"
-                            Toast.makeText(
-                                this,
-                                if (error != "No error message available")     "Error: $error, Response Message: $responseMessage, Status Code: $statusCode"
-                                else "Successfully logged in",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            if (error != "No error message available") {
+                                Toast.makeText(
+                                    this,
+                                    "Error: $error, Response Message: $responseMessage, Status Code: $statusCode",
+                                    Toast.LENGTH_LONG
+                                ).show()
+
+                                // Firebase Analytics 追踪
+                                val bundle = Bundle()
+                                val maxLength = 100
+                                val truncatedError = if (error.length > maxLength) error.substring(0, maxLength) else error
+                                bundle.putString("error_message", truncatedError)
+                                bundle.putString("response_message", responseMessage)
+                                bundle.putString("status_code", statusCode)
+                                firebaseAnalytics.logEvent("login_failed", bundle)
+
+                            } else {
+                                Toast.makeText(
+                                    this,
+                                    "Successfully logged in",
+                                    Toast.LENGTH_LONG
+                                ).show()
+
+                                // Firebase Analytics 追踪
+                                val bundle = Bundle()
+                                bundle.putString("status", "success")
+                                firebaseAnalytics.logEvent("login_successful", bundle)
+                            }
+
                         }
                     } ?: run {
                         Toast.makeText(this, "WorkInfo is null", Toast.LENGTH_LONG).show()
@@ -292,6 +346,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // 请求 CHANGE_NETWORK_STATE 权限
+    private fun requestPermissions2() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CHANGE_NETWORK_STATE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            // Permission is not granted
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CHANGE_NETWORK_STATE),
+                REQUEST_LOCATION_PERMISSION
+            )
+        }
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>, grantResults: IntArray
@@ -301,9 +372,16 @@ class MainActivity : AppCompatActivity() {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // Permission granted
                     registerNetworkCallback()
+                    //firebase analytics
+                    val bundle = Bundle()
+                    bundle.putString("permission", "granted")
+                    firebaseAnalytics.logEvent("location_permission", bundle)
                 } else {
                     // Permission denied
                     // Show an explanation to the user, or handle the failure as needed
+                    val bundle = Bundle()
+                    bundle.putString("permission", "denied")
+                    firebaseAnalytics.logEvent("location_permission", bundle)
                 }
                 return
             }
