@@ -1,5 +1,6 @@
 package com.example.auto_wlan_connect
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,14 +12,20 @@ import android.net.NetworkRequest
 import android.net.Uri
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -34,13 +41,6 @@ import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException
-import android.Manifest
-import android.os.Handler
-import android.os.Looper
-import android.view.MenuItem
-import android.widget.CheckBox
-import android.widget.Toast
-import androidx.lifecycle.Observer
 import java.net.Proxy
 
 
@@ -89,14 +89,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        val loginButton: Button = findViewById(R.id.login_button)
-        loginButton.setOnClickListener {
-            val username: String = findViewById<EditText>(R.id.username_input).text.toString()
-            val password: String = findViewById<EditText>(R.id.password_input).text.toString()
-            saveCredentials(username, password)
-//            postRequest(username, password)
-            scheduleWork(wlanWebsite?: String)
-        }
+
 
 
 
@@ -112,8 +105,20 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("credentials", Context.MODE_PRIVATE)
         val savedUsername = sharedPreferences.getString("username", "")
         val savedPassword = sharedPreferences.getString("password", "")
+        var wlanWebsite = sharedPreferences.getString("wlanWebsite", "")
+
         findViewById<EditText>(R.id.username_input).setText(savedUsername)
         findViewById<EditText>(R.id.password_input).setText(savedPassword)
+
+
+        val loginButton: Button = findViewById(R.id.login_button)
+        loginButton.setOnClickListener {
+            val username: String = findViewById<EditText>(R.id.username_input).text.toString()
+            val password: String = findViewById<EditText>(R.id.password_input).text.toString()
+            saveCredentials(username, password)
+//            postRequest(username, password)
+            scheduleWork(wlanWebsite?: String)
+        }
 
         // checkbox相关设置
         val checkBox = findViewById<CheckBox>(R.id.checkbox_feature)
@@ -235,6 +240,7 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("credentials", Context.MODE_PRIVATE)
         val savedUsername = sharedPreferences.getString("username", "")
         val savedPassword = sharedPreferences.getString("password", "")
+        var wlanWebsite = sharedPreferences.getString("wlanWebsite", "")
         val workRequest = OneTimeWorkRequestBuilder<NetworkWorker>()
             .setInputData(workDataOf("username" to savedUsername, "password" to savedPassword, "wlanWebsite" to wlanWebsite))
             .build()
@@ -332,7 +338,13 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK && data != null) {
+            //持久化wlanWebsite
             wlanWebsite = data.getStringExtra("wlan_website")
+            val sharedPreferences = getSharedPreferences("credentials", Context.MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                putString("wlanWebsite", wlanWebsite)
+                apply()
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ class NetworkWorker(
         val username = inputData.getString("username") ?: return Result.failure()
         val password = inputData.getString("password") ?: return Result.failure()
         //settingactivity的消息
-        var wlanWebsite = inputData.getString("password") ?: return Result.failure()
+        var wlanWebsite = inputData.getString("wlanWebsite") ?: return Result.failure()
 
         // Wait for a while to get the WiFi network, or you can make it more elegant.
         // Here just for example.
