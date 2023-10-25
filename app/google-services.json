@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "409445086955",
+    "project_id": "hazel-core-389708",
+    "storage_bucket": "hazel-core-389708.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:409445086955:android:aa3178f481ba0f64cc70ae",
+        "android_client_info": {
+          "package_name": "com.example.auto_wlan_connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCk4k4_Xp8o39SE5c_AtXkl2oPSiVM9cxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

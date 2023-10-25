@@ -1,5 +1,6 @@
 package com.example.auto_wlan_connect
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -57,6 +58,14 @@ class SettingsActivity : AppCompatActivity() {
 
     //当输入完成时向mainactivity发送信息
     private fun finishSettings(newValue: String) {
+        // 保存到 SharedPreferences
+        val sharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("wlan_website", newValue)
+            apply()
+        }
+
+        // 通过 Intent 传递数据到 MainActivity
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("wlan_website", newValue)
         setResult(RESULT_OK, intent)
