@@ -30,6 +30,15 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
         android:text="@string/feedback" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="100dp"
+        android:layout_height="88dp"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="100dp"
+        android:text="@string/feedback" />
     />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
